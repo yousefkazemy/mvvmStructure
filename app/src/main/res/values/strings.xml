@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">mvvmstructure</string>
+
+    <string name="error_connection">Could not reach the server, Check your internet connection</string>
+    <string name="error_unknown">An unknown error occurred</string>
+
+    <string name="view">View</string>
+    <string name="views">Views</string>
+
+    <string name="nav_bottom_item_home">Home</string>
+    <string name="nav_bottom_item_search">Search</string>
+    <string name="nav_bottom_item_bookmark">Bookmarks</string>
+
+    <string name="home_actionbar_title">Products</string>
+    <string name="search_actionbar_title">Search Products</string>
+    <string name="bookmark_actionbar_title">Bookmarks</string>
+    <string name="login_actionbar_title">Login</string>
+    <string name="product_actionbar_title">Product Detail</string>
+
+    <!-- Strings related to login -->
+    <string name="login_nav_title">Login</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome!"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+</resources>
