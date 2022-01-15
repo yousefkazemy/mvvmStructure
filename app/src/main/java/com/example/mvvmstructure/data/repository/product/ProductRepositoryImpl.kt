@@ -34,6 +34,8 @@ class ProductRepositoryImpl @Inject constructor(
     }
 
     override suspend fun fetchProducts(): Resource<List<Product>> {
+        //TODO ==> Errors messages should be replaced with strings resources id or general error
+        // types to handle showing errors to users with all languages supported
         return try {
             val response = movieApiInterface.getProducts()
             if (response.isSuccessful) {
@@ -49,6 +51,8 @@ class ProductRepositoryImpl @Inject constructor(
     }
 
     override suspend fun fetchVideos(): Resource<VideoResponse> {
+        //TODO ==> Errors messages should be replaced with strings resources id or general error
+        // types to handle showing errors to users with all languages supported
         return try {
             val response = movieApiInterface.getVideos()
             if (response.isSuccessful) {

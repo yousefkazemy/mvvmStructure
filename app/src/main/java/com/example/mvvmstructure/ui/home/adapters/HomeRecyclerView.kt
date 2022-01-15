@@ -26,15 +26,28 @@ import com.google.android.exoplayer2.util.Util
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+/**
+ * Custom RecyclerView to support playing videos, Actually There are two support
+ * items: image - video
+ * When user scroll items, Actually in onScrollStateChanged method detect the
+ * item position to play video(if item is video content).
+ */
 @AndroidEntryPoint
 class HomeRecyclerView : RecyclerView {
 
+    // Inject instance of video player, It is singleTone
     @Inject
     lateinit var videoPlayer: SimpleExoPlayer
 
     @Inject
     lateinit var glide: RequestManager
 
+    /**
+     * Video player view
+     * Actually need to add this view when new video content item
+     * detected and remove it when scroll to new item.
+     * add or remove to [R.layout.frame_media_container] in [R.layout.item_view_product]
+     */
     private lateinit var videoSurfaceView: PlayerView
     private var productBinding: ItemViewProductBinding? = null
     private var viewHolderParent: View? = null

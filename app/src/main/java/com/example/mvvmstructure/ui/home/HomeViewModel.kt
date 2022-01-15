@@ -31,9 +31,19 @@ class HomeViewModel @ViewModelInject constructor(
         fetchAllProducts()
     }
 
+    /**
+     * This method calls 2 api connections(products api(images), videos api).
+     * Should handle 2 api connections on different coroutine scopes and merge it with
+     * bookmarked items.
+     */
     fun fetchAllProducts() {
         val productsList = ArrayList<Product>()
         var bookmarkedList: List<ProductEntity> = emptyList()
+
+        /**
+         * parent job for handling child jobs like api calls and fetching bookmarked item from db
+         * if one child job cancel this parent job, all child will be cancelled
+         */
         job = viewModelScope.launch {
             launch {
                 val products = fetchProducts()
@@ -57,11 +67,14 @@ class HomeViewModel @ViewModelInject constructor(
                 bookmarkedList = fetchBookmarkedProducts()
             }
         }
+
+        // invokeOnCompletion waits for all jobs to be completed
         job.invokeOnCompletion {
             it?.let {
+                // jobs not completed because of exception
                 // handle exception
             } ?: run {
-                // All jobs completed
+                // All jobs successfully completed
                 bookmarkedList.forEach { productEntity ->
                     productsList.forEachIndexed { productIndex, product ->
                         if (product.id == productEntity.id) {
