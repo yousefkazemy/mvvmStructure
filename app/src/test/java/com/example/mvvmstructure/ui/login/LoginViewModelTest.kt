@@ -6,11 +6,13 @@ import com.example.mvvmstructure.ui.MainCoroutineRule
 import com.example.mvvmstructure.ui.getOrAwaitValue
 import com.example.mvvmstructure.utils.Status
 import com.google.common.truth.Truth.assertThat
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
+@ExperimentalCoroutinesApi
 class LoginViewModelTest {
 
     private lateinit var viewModel: LoginViewModel

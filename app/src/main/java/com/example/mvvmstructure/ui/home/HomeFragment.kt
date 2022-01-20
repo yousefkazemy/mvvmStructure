@@ -15,10 +15,11 @@ import com.example.mvvmstructure.utils.adapter.OnBookmarkItemClickListener
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+
 @AndroidEntryPoint
 class HomeFragment : BaseFragment(), OnBookmarkItemClickListener {
 
-    private lateinit var viewModel: HomeViewModel
+    lateinit var viewModel: HomeViewModel
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
@@ -50,14 +51,37 @@ class HomeFragment : BaseFragment(), OnBookmarkItemClickListener {
         }
 
         viewModel.products.observe(viewLifecycleOwner, Observer {
-            if (it.status == Status.SUCCESS) {
-                productAdapter.setData(it.data!!)
+            when (it.status) {
+                Status.SUCCESS -> {
+                    if (binding.recyclerProducts.visibility == View.INVISIBLE) {
+                        binding.shimmerFrameLayout.stopShimmer()
+                        binding.shimmerFrameLayout.visibility = View.INVISIBLE
+                        binding.recyclerProducts.visibility = View.VISIBLE
+                    }
+                    productAdapter.setData(it.data!!)
+                }
+                Status.LOADING -> {
+                    binding.shimmerFrameLayout.startShimmer()
+                }
+                else -> {
+                    // TODO ==> Handle error
+                }
+            }
+        })
+
+        viewModel.recyclerPosition.observe(viewLifecycleOwner, {
+            if (productAdapter.itemCount > 0) {
+                binding.recyclerProducts.scrollToPosition(it)
             }
         })
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        if (productAdapter.itemCount > 0) {
+            val layoutManager = binding.recyclerProducts.layoutManager as LinearLayoutManager
+            viewModel.setRecyclerPosition(layoutManager.findFirstVisibleItemPosition())
+        }
         _binding = null
     }
 

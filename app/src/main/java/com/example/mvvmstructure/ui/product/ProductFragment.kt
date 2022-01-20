@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.RequestManager
 import com.example.mvvmstructure.R
 import com.example.mvvmstructure.databinding.FragmentProductBinding
@@ -43,6 +44,10 @@ class ProductFragment : BaseFragment() {
         arguments?.let {
             val args = ProductFragmentArgs.fromBundle(it)
             viewModel.fetchProduct(args.id)
+        }
+
+        binding.layoutProduct.imageComment.setOnClickListener {
+            findNavController().navigate(R.id.action_productFragment_to_commentFragment)
         }
 
         viewModel.product.observe(viewLifecycleOwner, {

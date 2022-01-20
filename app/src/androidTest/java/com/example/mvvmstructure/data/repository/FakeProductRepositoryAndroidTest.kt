@@ -10,7 +10,7 @@ import com.example.mvvmstructure.data.remote.responses.VideoResponse
 import com.example.mvvmstructure.data.repository.product.ProductRepository
 import com.example.mvvmstructure.utils.Resource
 
-class FakeProductRepository : ProductRepository {
+class FakeProductRepositoryAndroidTest : ProductRepository {
 
     private val productItems = mutableListOf<ProductEntity>()
 
@@ -88,8 +88,8 @@ class FakeProductRepository : ProductRepository {
             previewImageWidth = 800,
             previewImageHeight = 800,
             largeImageURL = "",
-            largeImageWidth = 2400,
-            largeImageHeight = 2400,
+            largeImageWidth = 800,
+            largeImageHeight = 800,
             views = 1123486,
             likes = 112348,
             userId = id,

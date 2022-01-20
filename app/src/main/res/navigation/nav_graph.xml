@@ -42,6 +42,15 @@
             android:name="id"
             android:defaultValue="0L"
             app:argType="long" />
+        <action
+            android:id="@+id/action_productFragment_to_commentFragment"
+            app:destination="@id/commentFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/commentFragment"
+        android:name="com.example.mvvmstructure.ui.comment.CommentFragment"
+        android:label="@string/comment_actionbar_title"
+        tools:layout="@layout/fragment_comment" />
 
 </navigation>

@@ -49,6 +49,8 @@ class ProductDaoTest {
             id = 1,
             username = "yousef",
             imageUrl = "imageUrl",
+            imageWidth = 1500,
+            imageHeight = 1500,
             views = 123456,
             likes = 21452,
             tags = "image, nature"
@@ -65,6 +67,8 @@ class ProductDaoTest {
             id = 1,
             username = "yousef",
             imageUrl = "imageUrl",
+            imageWidth = 1500,
+            imageHeight = 1500,
             views = 123456,
             likes = 21452,
             tags = "image, nature"

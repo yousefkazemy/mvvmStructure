@@ -1,6 +1,8 @@
 package com.example.mvvmstructure.ui.login
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.replaceText
@@ -18,6 +20,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.Mockito
+import org.mockito.Mockito.verify
 
 @MediumTest
 @HiltAndroidTest
@@ -42,8 +46,11 @@ class LoginFragmentTest {
 
     @Test
     fun clickLoginButton_shouldSucceedLogin() {
+        val navController = Mockito.mock(NavController::class.java)
+
         val testViewModel = LoginViewModel(loginRepository)
         launchFragmentInHiltContainer<LoginFragment> {
+            Navigation.setViewNavController(requireView(), navController)
             viewModel = testViewModel
         }
 
@@ -51,11 +58,9 @@ class LoginFragmentTest {
         onView(withId(R.id.password)).perform(replaceText("123456"))
         onView(withId(R.id.login)).perform(click())
 
-        assertThat(
-            testViewModel.loginStatus.getOrAwaitValue().getContentIfNotHandled()!!.status
-        ).isEqualTo(
-            Status.SUCCESS
-        )
+        verify(navController).popBackStack()
+        assertThat(testViewModel.loginStatus.getOrAwaitValue().getContentIfNotHandled()!!.status)
+            .isEqualTo(Status.SUCCESS)
     }
 
     @Test
@@ -69,10 +74,7 @@ class LoginFragmentTest {
         onView(withId(R.id.password)).perform(replaceText("123456"))
         onView(withId(R.id.login)).perform(click())
 
-        assertThat(
-            testViewModel.loginStatus.getOrAwaitValue().getContentIfNotHandled()!!.status
-        ).isEqualTo(
-            Status.ERROR
-        )
+        assertThat(testViewModel.loginStatus.getOrAwaitValue().getContentIfNotHandled()!!.status)
+            .isEqualTo(Status.ERROR)
     }
 }

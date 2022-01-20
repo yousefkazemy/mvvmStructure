@@ -2,6 +2,7 @@ package com.example.mvvmstructure.ui.home.adapters
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.DiffUtil
@@ -110,10 +111,15 @@ class ProductAdapter @Inject constructor(
     }
 
     private fun checkIfItemBookmarked(position: Int, imageView: ImageView) {
-        if (products[position].isBookmarked) {
-            imageView.setImageResource(R.drawable.ic_baseline_bookmark_24)
+        if (products[position].type != "video" && this::mOnBookmarkClickListener.isInitialized) {
+            imageView.visibility = View.VISIBLE
+            if (products[position].isBookmarked) {
+                imageView.setImageResource(R.drawable.ic_baseline_bookmark_24)
+            } else {
+                imageView.setImageResource(R.drawable.ic_outline_bookmark_border_24)
+            }
         } else {
-            imageView.setImageResource(R.drawable.ic_outline_bookmark_border_24)
+            imageView.visibility = View.GONE
         }
     }
 }

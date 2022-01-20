@@ -7,9 +7,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mvvmstructure.data.model.Product
 import com.example.mvvmstructure.data.model.ProductEntity
+import com.example.mvvmstructure.data.remote.responses.VideoResponse
 import com.example.mvvmstructure.data.repository.product.ProductRepository
 import com.example.mvvmstructure.utils.Resource
 import com.example.mvvmstructure.utils.Status
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -23,6 +25,9 @@ class HomeViewModel @ViewModelInject constructor(
     private val _products = MutableLiveData<Resource<List<Product>>>()
     val products: LiveData<Resource<List<Product>>> = _products
 
+    private val _recyclerPosition = MutableLiveData<Int>()
+    val recyclerPosition: LiveData<Int> = _recyclerPosition
+
     private var productsArrayList = ArrayList<Product>()
 
     private lateinit var job: Job
@@ -31,33 +36,62 @@ class HomeViewModel @ViewModelInject constructor(
         fetchAllProducts()
     }
 
+    fun setRecyclerPosition(position: Int) {
+        _recyclerPosition.value = position
+    }
+
     /**
      * This method calls 2 api connections(products api(images), videos api).
      * Should handle 2 api connections on different coroutine scopes and merge it with
      * bookmarked items.
      */
     fun fetchAllProducts() {
+        if (productsArrayList.size == 0) {
+            _products.value = Resource.loading(null)
+        }
+
         val productsList = ArrayList<Product>()
+        val videosList = ArrayList<Product>()
         var bookmarkedList: List<ProductEntity> = emptyList()
 
         /**
          * parent job for handling child jobs like api calls and fetching bookmarked item from db
          * if one child job cancel this parent job, all child will be cancelled
          */
-        job = viewModelScope.launch {
+        job = viewModelScope.launch(IO) {
             launch {
-                val products = fetchProducts()
-                if (products.isNotEmpty()) {
-                    productsList.addAll(products)
+                val response = fetchProducts()
+                if (response.status == Status.SUCCESS) {
+                    productsList.addAll(response.data!!)
                 } else {
                     job.cancel(CancellationException("error"))
                 }
             }
 
             launch {
-                val products = fetchVideos()
-                if (products.isNotEmpty()) {
-                    productsList.addAll(products)
+                val response = fetchVideos()
+                if (response.status == Status.SUCCESS) {
+                    videosList.addAll(
+                        response.data!!.videos.map {
+                            Product(
+                                id = it.id,
+                                type = "video",
+                                tags = it.tags,
+                                previewImageUrl = "",
+                                previewImageWidth = 0,
+                                previewImageHeight = 0,
+                                largeImageURL = "",
+                                largeImageWidth = it.videos.tiny.width,
+                                largeImageHeight = it.videos.tiny.height,
+                                views = it.views,
+                                likes = it.likes,
+                                userId = it.userId,
+                                username = it.username,
+                                imageUrl = it.imageUrl,
+                                videoUrl = it.videos.tiny.url
+                            )
+                        }
+                    )
                 } else {
                     job.cancel(CancellationException("error"))
                 }
@@ -73,8 +107,11 @@ class HomeViewModel @ViewModelInject constructor(
             it?.let {
                 // jobs not completed because of exception
                 // handle exception
+                _products.postValue(Resource.error("An unknown error occurred", null))
             } ?: run {
                 // All jobs successfully completed
+                productsList.addAll(videosList)
+                videosList.clear()
                 bookmarkedList.forEach { productEntity ->
                     productsList.forEachIndexed { productIndex, product ->
                         if (product.id == productEntity.id) {
@@ -91,43 +128,15 @@ class HomeViewModel @ViewModelInject constructor(
         }
     }
 
-    private suspend fun fetchProducts(): List<Product> {
-        val response = repository.fetchProducts()
-        return if (response.status == Status.SUCCESS) {
-            response.data!!
-        } else {
-            emptyList()
-        }
+    suspend fun fetchProducts(): Resource<List<Product>> {
+        return repository.fetchProducts()
     }
 
-    private suspend fun fetchVideos(): List<Product> {
-        val response = repository.fetchVideos()
-        if (response.status == Status.SUCCESS) {
-            return response.data!!.videos.map {
-                Product(
-                    id = it.id,
-                    type = "video",
-                    tags = it.tags,
-                    previewImageUrl = "",
-                    previewImageWidth = 0,
-                    previewImageHeight = 0,
-                    largeImageURL = "",
-                    largeImageWidth = it.videos.tiny.width,
-                    largeImageHeight = it.videos.tiny.height,
-                    views = it.views,
-                    likes = it.likes,
-                    userId = it.userId,
-                    username = it.username,
-                    imageUrl = it.imageUrl,
-                    videoUrl = it.videos.tiny.url
-                )
-            }
-        } else {
-            return emptyList()
-        }
+    suspend fun fetchVideos(): Resource<VideoResponse> {
+        return repository.fetchVideos()
     }
 
-    private suspend fun fetchBookmarkedProducts(): List<ProductEntity> {
+    suspend fun fetchBookmarkedProducts(): List<ProductEntity> {
         return repository.observeAllProducts()
     }
 
@@ -140,14 +149,14 @@ class HomeViewModel @ViewModelInject constructor(
         }
     }
 
-    private fun insertProductToDB(product: Product, itemPosition: Int) {
+    fun insertProductToDB(product: Product, itemPosition: Int) {
         viewModelScope.launch {
             repository.insertProduct(convertProductToProductEntity(product))
             updateProducts(product, itemPosition, true)
         }
     }
 
-    private fun deleteProductFromDB(product: Product, itemPosition: Int) {
+    fun deleteProductFromDB(product: Product, itemPosition: Int) {
         viewModelScope.launch {
             repository.deleteProduct(convertProductToProductEntity(product))
             updateProducts(product, itemPosition, false)

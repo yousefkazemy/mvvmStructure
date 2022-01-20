@@ -16,6 +16,7 @@
     <string name="bookmark_actionbar_title">Bookmarks</string>
     <string name="login_actionbar_title">Login</string>
     <string name="product_actionbar_title">Product Detail</string>
+    <string name="comment_actionbar_title">Comments</string>
 
     <!-- Strings related to login -->
     <string name="login_nav_title">Login</string>
@@ -27,4 +28,8 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
+
+    <!-- Strings related to search -->
+    <string name="prompt_search">Search your product</string>
+    <string name="label_no_result">No result found!</string>
 </resources>

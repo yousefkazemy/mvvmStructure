@@ -14,6 +14,8 @@ import com.example.mvvmstructure.data.repository.login.LoginRepository
 import com.example.mvvmstructure.data.repository.login.LoginRepositoryImpl
 import com.example.mvvmstructure.data.repository.product.ProductRepository
 import com.example.mvvmstructure.data.repository.product.ProductRepositoryImpl
+import com.example.mvvmstructure.data.repository.search.SearchRepository
+import com.example.mvvmstructure.data.repository.search.SearchRepositoryImpl
 import com.example.mvvmstructure.utils.Constants.DATABASE_NAME
 import com.google.android.exoplayer2.ExoPlayerFactory
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection
@@ -64,6 +66,12 @@ class AppModule {
     fun provideLoginRepositoryImpl(
         movieApiInterface: MovieApiInterface
     ) = LoginRepositoryImpl(movieApiInterface) as LoginRepository
+
+    @Singleton
+    @Provides
+    fun provideSearchRepositoryImpl(
+        movieApiInterface: MovieApiInterface
+    ) = SearchRepositoryImpl(movieApiInterface) as SearchRepository
 
     @Provides
     @Singleton
